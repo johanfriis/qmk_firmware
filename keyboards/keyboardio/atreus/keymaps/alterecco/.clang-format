@@ -1,0 +1,16 @@
+BasedOnStyle: Chromium
+IndentWidth: 2
+TabWidth: 2
+ColumnLimit: 80
+AlignAfterOpenBracket: AlwaysBreak
+AlignConsecutiveAssignments: true
+AlignConsecutiveMacros: true
+AlignTrailingComments: true
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortEnumsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: true
+AlwaysBreakAfterReturnType: All
+BinPackArguments: false
+BinPackParameters: false
+AlwaysBreakAfterReturnType: None
