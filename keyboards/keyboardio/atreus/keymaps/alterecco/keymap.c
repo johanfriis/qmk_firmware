@@ -1,6 +1,18 @@
 #include "keymap.h"
+#include <stdint.h>
 #include "features/mod_hold_n_tap.h"
 #include "features/oneshot.h"
+
+// TODO
+// - switch order of home row mods to CAGS
+// - implement One Shot Shift or Smart Words on shift tap
+// - implement Smart Numbers on tri tap NAV SYM
+// - finish Sym layer with Key Overrides
+// - consider vim arrows on NEIO instead of NCEI
+
+// XXX: Failed experiments
+// - backspace on left thumb when holding space
+//
 
 // clang-format off
 
@@ -54,8 +66,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 #define _______ KC_TRANSPARENT
 
   [DEF] = LAYOUT_3x10_6(
-
-
 //---------+-------__X__-----__J__-------+-------            ---------+-------__Q__-----__Z__-------+---------//
    ___Q___ , ___F___ , ___D___ , ___W___ , ___Y___     ,      ___B___ , ___G___ , ___C___ , ___L___ , ___Z___ ,
 //---------+---------+---------+---------+---------          ---------+---------+---------+---------+---------//
@@ -67,17 +77,41 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                     //---------+---------+----------------------------+---------+---------//
   ),
 
+//   [Q_P] = LAYOUT_3x10_6(
+// //---------+-------__X__-----__J__-------+-------            ---------+-------__Q__-----__Z__-------+---------//
+//    _______ , _______ , _______ , _______ , _______     ,      _______ , _______ , _______ , _______ , _______ ,
+// //---------+---------+---------+---------+---------          ---------+---------+---------+---------+---------//
+//    _______ , _______ , _______ , _______ , _______     ,      _______ , _______ , _______ , _______ , _______ ,
+// //---------+---------+---------+---------+---------          ---------+---------+---------+---------+---------//
+//    _______ , _______ , _______ , _______ , _______     ,      _______ , _______ , _______ , _______ , _______ ,
+// //---------+---------+---------+---------+--------           ---------+---------+---------+---------+---------//
+//                        _______ , _______ , _______     ,      _______ , _______ , _______
+//                     //---------+---------+----------------------------+---------+---------//
+//   ),
+
   [SYM] = LAYOUT_3x10_6(
-    KC_ESC,  KC_LBRC, KC_LCBR, KC_LPRN, KC_TILD, KC_CIRC, KC_RPRN, KC_RCBR, KC_RBRC,  KC_GRV,
-    KC_MINS, KC_ASTR, KC_EQL,  KC_UNDS, KC_DLR,  KC_HASH, OS_CMD,  OS_ALT,  OS_CTRL,  OS_SHFT,
-    KC_PLUS, KC_PIPE, KC_AT,   KC_SLSH, KC_PERC, XXXXXXX, KC_BSLS, KC_AMPR, KC_QUES,  KC_EXLM,
-                      _______, _______, _______, _______, _______, _______
+//---------+-------__X__-----__J__-------+-------            ---------+-------__Q__-----__Z__-------+---------//
+   _______ , _______ , _______ , _______ , _______     ,      _______ , _UNDRS_ , _______ , _______ , _______ ,
+//---------+---------+---------+---------+---------          ---------+---------+---------+---------+---------//
+   _______ , _______ , _______ , _LPARN_ , _______     ,      _______ , _______ , _______ , _______ , _SCOLN_ ,
+//--                                                          -------+---------+---------+---------+---------          ---------+---------+---------+---------+---------//
+   _______ , _______ , _______ , _SLASH_ , _______     ,      _______ , _______ , _______ , _______ , _______ ,
+//---------+---------+---------+---------+--------           ---------+---------+---------+---------+---------//
+                       _______ , _______ , _______     ,      _______ , _______ , _______
+                    //---------+---------+----------------------------+---------+---------//
   ),
+
+  // [999] = LAYOUT_3x10_6(
+  //   KC_ESC,  KC_LBRC, KC_LCBR, KC_LPRN, KC_TILD, KC_CIRC, KC_RPRN, KC_RCBR, KC_RBRC,  KC_GRV,
+  //   KC_MINS, KC_ASTR, KC_EQL,  KC_UNDS, KC_DLR,  KC_HASH, OS_CMD,  OS_ALT,  OS_CTRL,  OS_SHFT,
+  //   KC_PLUS, KC_PIPE, KC_AT,   KC_SLSH, KC_PERC, XXXXXXX, KC_BSLS, KC_AMPR, KC_QUES,  KC_EXLM,
+  //                     _______, _______, _______, _______, _______, _______
+  // ),
 
   [NAV] = LAYOUT_3x10_6(
     KC_TAB,  MHT_WIN, TAB_L,   TAB_R,   KC_VOLU, RESET,   KC_BSPACE ,    KC_UP,   END,      KC_DEL,
-    OS_SHFT, OS_CTRL, OS_ALT,  OS_CMD,  KC_VOLD, KC_CAPS, KC_LEFT, KC_DOWN, KC_RGHT,  KC_BSPC,
-    SPACE_L, SPACE_R, BACK,    FWD,     KC_MPLY, XXXXXXX, __TAB__, KC_PGUP, MHT_LANG, KC_ENT,
+    OS_SHFT, OS_CTRL, OS_ALT,  OS_CMD,  KC_VOLD, _GRAVE_, KC_LEFT, KC_DOWN, KC_RGHT,  KC_BSPC,
+    SPACE_L, SPACE_R, BACK,    FWD,     KC_MPLY, XXXXXXX, __TAB__, KC_PGUP, MHT_LANG, RESET,
                       _______, _______, _______,  _______, _ENTER_, _______
   ),
 
@@ -123,6 +157,8 @@ oneshot_state os_ctrl_state = os_up_unqueued;
 oneshot_state os_alt_state  = os_up_unqueued;
 oneshot_state os_cmd_state  = os_up_unqueued;
 
+uint8_t mod_state;
+uint8_t oneshot_mod_state;
 bool process_record_user(uint16_t keycode, keyrecord_t* record) {
   // clang-format off
   process_mod_hold_n_tap(
@@ -152,6 +188,44 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
   );
   // clang-format on
 
+  mod_state         = get_mods();
+  oneshot_mod_state = get_oneshot_mods();
+
+  switch (keycode) {
+    case __DOT__: {
+      if (record->event.pressed) {
+        if (mod_state & MOD_BIT(KC_LSFT)) {
+          unregister_code(KC_LSFT);
+          register_code(KC_QUOTE);  // On German layout #
+          unregister_code(KC_QUOTE);
+          register_code(KC_LSFT);  // to keep shift pressed if held
+        } else {
+          register_code(KC_DOT);
+          unregister_code(KC_DOT);
+        }
+        return false;
+      }
+      // static bool is_registered;
+      // if (mod_state & MOD_MASK_SHIFT) {
+      //   if (record->event.pressed) {
+      //     del_mods(MOD_MASK_SHIFT);
+      //     unregister_code(_LSHFT_);
+      //     register_code(KC_QUOTE);
+      //     is_registered = true;
+      //     // register_code(KC_LSFT);
+      //     // set_mods(MOD_MASK_SHIFT);
+      //   } else {
+      //     if (is_registered) {
+      //       unregister_code(KC_QUOTE);
+      //       is_registered = false;
+      //     }
+      //   }
+
+      //   return false;
+      // }
+      return true;
+    }
+  }
   return true;
 }
 

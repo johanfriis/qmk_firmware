@@ -5,6 +5,7 @@ BOOTLOADER = caterina
 
 NKRO_ENABLE = yes           # Nkey Rollover - if this doesn't work, see here: https://github.com/tmk/tmk_keyboard/wiki/FAQ#nkro-doesnt-work
 COMBO_ENABLE = yes
+KEY_OVERRIDE_ENABLE=no
 
 MIDI_ENABLE = no            # MIDI controls
 AUDIO_ENABLE = no           # Audio output on port C6
@@ -28,4 +29,7 @@ SRC += ./features/mod_hold_n_tap.c
 # the associated config option has been enabled
 ifeq ($(strip $(COMBO_ENABLE)), yes)
 	SRC += combos.c
+endif
+ifeq ($(strip $(KEY_OVERRIDE_ENABLE)), yes)
+	SRC += overrides.c
 endif
